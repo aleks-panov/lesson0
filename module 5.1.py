@@ -8,6 +8,9 @@ class House:
         num = self.number_of_floors
         new = list(range(1, new_floor + 1))
         for i in range(len(new)):
+            if new_floor >= num:
+                print("Такого этажа не существует")
+                break
             if new[i] >= 1 and new[i] <= num:
                 print(new[i])
             else:
