@@ -24,16 +24,16 @@ class Eagle:
 
 class Pegasus(Horse, Eagle):
     def __init__(self):
-        Horse.x_distance
-        Eagle.y_distance
+        self.x_distance=Horse.x_distance
+        self.y_distance=Eagle.y_distance
 
     def move(self, dx, dy):
         Horse.run(self, dx)
         Eagle.fly(self, dy)
 
     def get_pos(self):
-        Horse.x_distance
-        Eagle.y_distance
+        self.x_distance
+        self.y_distance
         return (self.x_distance, self.y_distance)
 
     def voice(self):
