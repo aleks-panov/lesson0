@@ -38,8 +38,8 @@ class UserState(StatesGroup):
 
 
 @dp.message_handler(commands=["start"])
-async def start(massage):
-    await massage.answer("Привет! Я бот помогающий твоему здоровью", reply_markup=kb)
+async def start(message):
+    await message.answer("Привет! Я бот помогающий твоему здоровью", reply_markup=kb)
 
 @dp.message_handler(text="Рассчитать")
 async def main_menu(message):
@@ -97,7 +97,7 @@ async def get_buying_list(message):
     await message.answer("Выберите продукт для покупки", reply_markup=kbi2)
 
 @dp.callback_query_handler(text="product_buying")
-async def set_age(call):
+async def send_confirm_message(call):
     await call.message.answer("Вы успешно приобрели продукт!")
     await call.answer()
 
