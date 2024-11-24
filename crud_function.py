@@ -11,13 +11,16 @@ def initiate_db():
     description TEXT,
     price INTEGER NOT NULL);
     ''')
+    connection.commit()
 
-    a = 1
-    for i in range(4):
-        cursor.execute("INSERT INTO Products (title, description, price) VALUES (?, ?, ?)",
-                    (f'Продукт {a}', f'Описание {a}', f'{a * 100}'))
-        a += 1
-
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Users(
+        id INTEGER PRIMARY KEY,
+        username TEXT NOT NULL,
+        email TEXT NOT NULL,
+        age INTEGER NOT NULL,
+        balance INTEGER NOT NULL);
+        ''')
     connection.commit()
     connection.close()
 
@@ -26,6 +29,7 @@ def get_all_products():
 
     connection = sqlite3.connect("telegram_bot.db")
     cursor = connection.cursor()
+
     cursor.execute("SELECT * FROM Products")
     products = cursor.fetchall()
 
@@ -33,4 +37,34 @@ def get_all_products():
     connection.close()
     return products
 
-ini = initiate_db()
+
+def add_user(username, email, age):
+    connection = sqlite3.connect("telegram_bot.db")
+    cursor = connection.cursor()
+
+    cursor.execute(f'''
+    SELECT COUNT(*) FROM Users
+    ''')
+    all_user = cursor.fetchone()[0] + 1
+
+    cursor.execute(f'''
+    INSERT INTO Users VALUES("{all_user}", "{username}", "{email}", "{age}", "1000")
+    ''')
+
+    connection.commit()
+    connection.close()
+
+
+def is_included(username):
+    connection = sqlite3.connect("telegram_bot.db")
+    cursor = connection.cursor()
+
+    user0 = True
+    check_user = cursor.execute('SELECT * FROM Users WHERE username=?', (username,))
+    if check_user.fetchone() is None:
+        user0 = False
+    return user0
+
+
+    connection.commit()
+    connection.close()
