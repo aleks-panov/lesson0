@@ -33,10 +33,10 @@ async def post_user(user: User,
     return f"User {current_index} is registreted"
 
 
-@app.put("/user/{user_id}/{username}/{age}")
-async def update_user(user_id: Annotated[int, Path(ge=1, description="Inter user ID", example="1")],
-                      username: Annotated[str, Path(min_length=5, max_length=20, description="Enter username", example="Urban")],
-                      age: Annotated[int, Path(ge=18, le=120, description="Enter age", example="18")]) -> str:
+@app.put("/user/{user_id}/{username}/{age}", response_model=str)
+async def update_user(username: Annotated[str, Path(min_length=5, max_length=20, description="Enter username", example="Urban")],
+                      user_id: int = Path(ge=1, description="Inter user ID", example="1"),
+                      age: int = Path(ge=18, le=120, description="Enter age", example="18")) -> str:
     for inter_user in users:
         if inter_user.id == user_id:
            inter_user.username = username
@@ -46,11 +46,11 @@ async def update_user(user_id: Annotated[int, Path(ge=1, description="Inter user
             HTTPException(status_code=404, detail="User was not found, code 404")
 
 
-@app.delete("/user/{user_id}")
-async def delete_user(user_id: Annotated[int, Path(ge=1, description="Inter user ID", example="Urban")]):
-    for exit_user in users:
+@app.delete("/user/{user_id}", response_model=str)
+async def delete_user(user_id: int = Path(ge=1, description="Inter user ID", example="1")) -> str:
+    for index, exit_user in enumerate(users):
         if exit_user.id == user_id:
-            del users[user_id]
+            users.pop(index)
             return f"User {exit_user.id} has been deleted"
-        else:
-            HTTPException(status_code=404, detail="User not found")
+
+    raise HTTPException(status_code=404, detail="User not found")
