@@ -30,7 +30,7 @@ async def post_user(user: User,
     user.username = username
     user.age = age
     users.append(user)
-    return f"User {current_index} is registreted"
+    return f"id {user.id}, username {user.username}, age {user.age}"
 
 
 @app.put("/user/{user_id}/{username}/{age}", response_model=str)
@@ -41,7 +41,7 @@ async def update_user(username: Annotated[str, Path(min_length=5, max_length=20,
         if inter_user.id == user_id:
            inter_user.username = username
            inter_user.age = age
-           return f"User {inter_user.id} is updated"
+           return f"id {inter_user.id}, username {inter_user.username}, age {inter_user.age}"
         else:
             HTTPException(status_code=404, detail="User was not found, code 404")
 
@@ -51,6 +51,6 @@ async def delete_user(user_id: int = Path(ge=1, description="Inter user ID", exa
     for index, exit_user in enumerate(users):
         if exit_user.id == user_id:
             users.pop(index)
-            return f"User {exit_user.id} has been deleted"
+            return f"id {exit_user.id}, username {exit_user.username}, age {exit_user.age}"
 
     raise HTTPException(status_code=404, detail="User not found")
