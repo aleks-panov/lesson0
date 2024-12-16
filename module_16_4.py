@@ -19,38 +19,31 @@ async def get_users() -> List[User]:
 
 
 @app.post("/user/{username}/{age}")
-async def post_user(user: User,
+async def post_user(
                     username: Annotated[str, Path(min_length=5, max_length=20, description="Enter username", example="Urban")],
-                    age: Annotated[int, Path(ge=18, le=120, description="Enter age", example="18")]) -> str:
-    if users:
-        current_index = max(user.id for user in users) + 1
-    else:
-        current_index = 1
-    user.id = current_index
-    user.username = username
-    user.age = age
-    users.append(user)
-    return f"id {user.id}, username {user.username}, age {user.age}"
+                    age: Annotated[int, Path(ge=18, le=120, description="Enter age", example="18")]) -> User:
+        user_id = max(users, key=lambda x: int(x.id)).id + 1 if users else 1
+        user = User(id=user_id, username=username, age=age)
+        users.append(user)
+        return user
 
 
-@app.put("/user/{user_id}/{username}/{age}", response_model=str)
+@app.put("/user/{user_id}/{username}/{age}")
 async def update_user(username: Annotated[str, Path(min_length=5, max_length=20, description="Enter username", example="Urban")],
                       user_id: int = Path(ge=1, description="Inter user ID", example="1"),
-                      age: int = Path(ge=18, le=120, description="Enter age", example="18")) -> str:
+                      age: int = Path(ge=18, le=120, description="Enter age", example="18")) -> User:
     for inter_user in users:
         if inter_user.id == user_id:
            inter_user.username = username
            inter_user.age = age
-           return f"id {inter_user.id}, username {inter_user.username}, age {inter_user.age}"
-        else:
-            HTTPException(status_code=404, detail="User was not found, code 404")
+           return inter_user
+        raise HTTPException(status_code=404, detail="User was not found, code 404")
 
 
-@app.delete("/user/{user_id}", response_model=str)
-async def delete_user(user_id: int = Path(ge=1, description="Inter user ID", example="1")) -> str:
-    for index, exit_user in enumerate(users):
+@app.delete("/user/{user_id}")
+async def delete_user(user_id: int = Path(ge=1, description="Inter user ID", example="1")) -> User:
+    for exit_user in users:
         if exit_user.id == user_id:
-            users.pop(index)
-            return f"id {exit_user.id}, username {exit_user.username}, age {exit_user.age}"
-
+            users.remove(exit_user)
+            return exit_user
     raise HTTPException(status_code=404, detail="User not found")
