@@ -22,9 +22,10 @@ async def get_users(request: Request) -> HTMLResponse:
 
 @app.get("/user/{user_id}", response_class=HTMLResponse)
 async def get_user(request: Request, user_id: int) -> HTMLResponse:
-    if user_id < 0 or user_id >= len(users):
-        raise HTTPException(status_code=404, detail="User not found")
-    return templates.TemplateResponse("test.html", {"request": request, "user": users[user_id]})
+    for us_id in users:
+        if us_id != user_id:
+            raise HTTPException(status_code=404, detail="User not found")
+    return templates.TemplateResponse("users.html", {"request": request, "user": users[user_id]})
 
 
 @app.post("/user/{username}/{age}")
